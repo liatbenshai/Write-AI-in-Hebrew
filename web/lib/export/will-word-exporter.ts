@@ -228,6 +228,26 @@ export async function exportIndividualWillToWord(data: IndividualWillData) {
     });
   }
 
+  // כותרות
+  if (data.headings && data.headings.length > 0) {
+    data.headings.forEach((heading) => {
+      if (heading.text) {
+        const headingLevel = heading.level === 1 ? HeadingLevel.HEADING_1 : 
+                           heading.level === 2 ? HeadingLevel.HEADING_2 : 
+                           HeadingLevel.HEADING_3;
+        
+        sections.push(
+          createRTLParagraph(heading.text, {
+            bold: true,
+            heading: headingLevel,
+            spacing: { before: 300, after: 200 },
+            fontSize: heading.level === 1 ? 32 : heading.level === 2 ? 28 : 24,
+          })
+        );
+      }
+    });
+  }
+
   // סעיפים אחרונים
   const lastClauseNumber = 7 + data.additionalClauses.length;
   sections.push(

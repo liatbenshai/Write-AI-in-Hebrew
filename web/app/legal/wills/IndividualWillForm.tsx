@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import type { IndividualWillData, Gender, Beneficiary, Asset, Clause } from './types';
+import type { IndividualWillData, Gender, Beneficiary, Asset, Clause, Heading } from './types';
 import { Input } from '../../../components/ui/Input';
 import { IsraeliIDInput, PhoneInput, EmailInput, DateInput } from '../../../components/forms';
 import { Button } from '../../../components/ui/Button';
@@ -196,6 +196,34 @@ export default function IndividualWillForm({ data, onChange }: Props) {
     const newInstructions = [...(data.specialInstructions || [])];
     newInstructions[instructionIdx].subItems = newInstructions[instructionIdx].subItems?.filter((_, i) => i !== subIdx);
     onChange({ ...data, specialInstructions: newInstructions });
+  };
+
+  // כותרות
+  const addHeading = () => {
+    onChange({
+      ...data,
+      headings: [
+        ...(data.headings || []),
+        { text: '', level: 1 },
+      ],
+    });
+  };
+
+  const removeHeading = (index: number) => {
+    const filtered = (data.headings || []).filter((_, i) => i !== index);
+    onChange({ ...data, headings: filtered });
+  };
+
+  const updateHeading = (index: number, text: string) => {
+    const newHeadings = [...(data.headings || [])];
+    newHeadings[index] = { ...newHeadings[index], text };
+    onChange({ ...data, headings: newHeadings });
+  };
+
+  const updateHeadingLevel = (index: number, level: 1 | 2 | 3) => {
+    const newHeadings = [...(data.headings || [])];
+    newHeadings[index] = { ...newHeadings[index], level };
+    onChange({ ...data, headings: newHeadings });
   };
 
   return (
@@ -628,6 +656,70 @@ export default function IndividualWillForm({ data, onChange }: Props) {
         ) : (
           <p className="text-gray-500 text-sm">לחץ על "הוסף הוראה מיוחדת" להוספת הוראות מיוחדות (עם אפשרות לתתי-סעיפים)</p>
         )}
+      </section>
+
+      {/* כותרות */}
+      <section className="bg-white border-2 border-orange-300 rounded-lg p-6">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="font-semibold text-lg">📋 כותרות</h3>
+          <Button
+            onClick={addHeading}
+            variant="secondary"
+            size="sm"
+          >
+            + הוסף כותרת
+          </Button>
+        </div>
+
+        {data.headings && data.headings.length > 0 ? (
+          <div className="space-y-4">
+            {data.headings.map((heading, headingIdx) => (
+              <div key={headingIdx} className="border-2 border-orange-200 rounded-lg p-4 bg-orange-50/30">
+                <div className="flex items-center justify-between mb-2">
+                  <label className="font-medium text-sm text-orange-900">כותרת {headingIdx + 1}</label>
+                  <button
+                    onClick={() => removeHeading(headingIdx)}
+                    className="text-red-600 hover:text-red-700 text-sm"
+                  >
+                    מחק כותרת
+                  </button>
+                </div>
+                
+                <div className="grid md:grid-cols-4 gap-3">
+                  <div className="md:col-span-3">
+                    <Input
+                      value={heading.text}
+                      onChange={(e) => updateHeading(headingIdx, e.target.value)}
+                      placeholder="תוכן הכותרת..."
+                    />
+                  </div>
+                  <div>
+                    <select
+                      value={heading.level}
+                      onChange={(e) => updateHeadingLevel(headingIdx, parseInt(e.target.value) as 1 | 2 | 3)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                    >
+                      <option value={1}>כותרת ראשית</option>
+                      <option value={2}>כותרת משנה</option>
+                      <option value={3}>כותרת שלישית</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-gray-500 text-sm">לחץ על "הוסף כותרת" להוספת כותרות לצוואה</p>
+        )}
+        
+        <div className="mt-4 p-3 bg-orange-50 rounded-lg border border-orange-200">
+          <h4 className="font-medium text-orange-900 mb-2">על כותרות:</h4>
+          <ul className="text-sm text-orange-800 space-y-1">
+            <li>• כותרות עוזרות לארגן את הצוואה</li>
+            <li>• דוגמאות: "חלוקת העיזבון", "הוראות מיוחדות"</li>
+            <li>• כותרות לא ממוספרות ולא נכללות כסעיפים</li>
+          </ul>
+        </div>
       </section>
 
       {/* עדים */}

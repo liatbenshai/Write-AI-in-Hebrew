@@ -21,6 +21,12 @@ export interface Clause {
   subItems?: string[]; // תתי-סעיפים (7.1, 7.2...)
 }
 
+// כותרת (לא סעיף)
+export interface Heading {
+  text: string;
+  level: 1 | 2 | 3; // רמת כותרת
+}
+
 // עד
 export interface Witness {
   name: string;
@@ -76,6 +82,9 @@ export interface IndividualWillData {
   
   // הוראות מיוחדות (עם תתי-סעיפים)
   specialInstructions: Clause[];
+  
+  // כותרות (לא ממוספרות)
+  headings: Heading[];
   
   // עדים
   witnesses: [Witness, Witness];
@@ -284,6 +293,8 @@ export function defaultIndividualWillData(): IndividualWillData {
     additionalClauses: [],
     
     specialInstructions: [],
+    
+    headings: [],
     
     witnesses: [
       { name: '', id: '', address: '' },

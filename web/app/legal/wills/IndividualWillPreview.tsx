@@ -178,6 +178,31 @@ export default function IndividualWillPreview({ data }: Props) {
         </div>
       )}
 
+      {/* כותרות */}
+      {data.headings && data.headings.length > 0 && (
+        <div className="space-y-4 border-t pt-4">
+          {data.headings.map((heading, headingIdx) => (
+            <div key={headingIdx} className="avoid-break">
+              {heading.level === 1 && (
+                <h2 className="font-bold text-xl mb-3 mt-6" style={{ textAlign: 'right', direction: 'rtl' }}>
+                  {heading.text}
+                </h2>
+              )}
+              {heading.level === 2 && (
+                <h3 className="font-bold text-lg mb-2 mt-4" style={{ textAlign: 'right', direction: 'rtl' }}>
+                  {heading.text}
+                </h3>
+              )}
+              {heading.level === 3 && (
+                <h4 className="font-bold text-base mb-2 mt-3" style={{ textAlign: 'right', direction: 'rtl' }}>
+                  {heading.text}
+                </h4>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+
       {/* סעיפים אחרונים */}
       <div className="space-y-4 border-t pt-4">
         {data.beneficiaries.length > 0 && (
