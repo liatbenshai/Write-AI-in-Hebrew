@@ -346,9 +346,9 @@ export default function AttorneyFeePage() {
                 <div className="grid md:grid-cols-2 gap-4">
                   <button
                     type="button"
-                    onClick={() => setData({ ...data, feeStructure: { ...data.feeStructure, type: 'flat' } })}
+                    onClick={() => setData({ ...data, fee: { ...data.fee, structure: 'flat_fee' } })}
                     className={`p-4 border-2 rounded-lg text-right transition-all ${
-                      data.feeStructure.type === 'flat'
+                      data.fee.structure === 'flat_fee'
                         ? 'border-blue-500 bg-blue-50'
                         : 'border-gray-300 hover:border-blue-300'
                     }`}
@@ -359,9 +359,9 @@ export default function AttorneyFeePage() {
                   
                   <button
                     type="button"
-                    onClick={() => setData({ ...data, feeStructure: { ...data.feeStructure, type: 'hourly' } })}
+                    onClick={() => setData({ ...data, fee: { ...data.fee, structure: 'hourly_rate' } })}
                     className={`p-4 border-2 rounded-lg text-right transition-all ${
-                      data.feeStructure.type === 'hourly'
+                      data.fee.structure === 'hourly_rate'
                         ? 'border-blue-500 bg-blue-50'
                         : 'border-gray-300 hover:border-blue-300'
                     }`}
@@ -372,9 +372,9 @@ export default function AttorneyFeePage() {
                   
                   <button
                     type="button"
-                    onClick={() => setData({ ...data, feeStructure: { ...data.feeStructure, type: 'percentage' } })}
+                    onClick={() => setData({ ...data, fee: { ...data.fee, structure: 'contingency' } })}
                     className={`p-4 border-2 rounded-lg text-right transition-all ${
-                      data.feeStructure.type === 'percentage'
+                      data.fee.structure === 'contingency'
                         ? 'border-blue-500 bg-blue-50'
                         : 'border-gray-300 hover:border-blue-300'
                     }`}
@@ -385,9 +385,9 @@ export default function AttorneyFeePage() {
                   
                   <button
                     type="button"
-                    onClick={() => setData({ ...data, feeStructure: { ...data.feeStructure, type: 'retainer_hourly' } })}
+                    onClick={() => setData({ ...data, fee: { ...data.fee, structure: 'retainer_plus' } })}
                     className={`p-4 border-2 rounded-lg text-right transition-all ${
-                      data.feeStructure.type === 'retainer_hourly'
+                      data.fee.structure === 'retainer_plus'
                         ? 'border-blue-500 bg-blue-50'
                         : 'border-gray-300 hover:border-blue-300'
                     }`}
@@ -399,42 +399,42 @@ export default function AttorneyFeePage() {
               </div>
 
               {/* Amount Input */}
-              {data.feeStructure.type && (
+              {data.fee.structure && (
                 <div className="border-2 border-green-100 rounded-lg p-6 bg-green-50/30">
-                  {data.feeStructure.type === 'flat' && (
+                  {data.fee.structure === 'flat_fee' && (
                     <div>
                       <label className="block text-gray-700 font-medium mb-2">
                         סכום שכר הטרחה (₪) <span className="text-red-500">*</span>
                       </label>
                       <input
                         type="number"
-                        value={data.feeStructure.flatAmount || ''}
+                        value={data.fee.flatAmount || ''}
                         onChange={(e) => setData({ 
                           ...data, 
-                          feeStructure: { ...data.feeStructure, flatAmount: Number(e.target.value) }
+                          fee: { ...data.fee, flatAmount: Number(e.target.value) }
                         })}
                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
                         placeholder="10000"
                       />
-                      {data.feeStructure.flatAmount && (
+                      {data.fee.flatAmount && (
                         <p className="text-sm text-gray-600 mt-2">
-                          בכתיב: {numberToWords(data.feeStructure.flatAmount)} שקלים חדשים
+                          בכתיב: {numberToWords(data.fee.flatAmount)} שקלים חדשים
                         </p>
                       )}
                     </div>
                   )}
                   
-                  {data.feeStructure.type === 'hourly' && (
+                  {data.fee.structure === 'hourly_rate' && (
                     <div>
                       <label className="block text-gray-700 font-medium mb-2">
                         תעריף שעתי (₪) <span className="text-red-500">*</span>
                       </label>
                       <input
                         type="number"
-                        value={data.feeStructure.hourlyRate || ''}
-                        onChange={(e) => setData({ 
-                          ...data, 
-                          feeStructure: { ...data.feeStructure, hourlyRate: Number(e.target.value) }
+                        value={data.fee.hourlyRate || ''}
+                        onChange={(e) => setData({
+                          ...data,
+                          fee: { ...data.fee, hourlyRate: Number(e.target.value) }
                         })}
                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
                         placeholder="500"
@@ -442,7 +442,7 @@ export default function AttorneyFeePage() {
                     </div>
                   )}
                   
-                  {data.feeStructure.type === 'percentage' && (
+                  {data.fee.structure === 'contingency' && (
                     <div className="space-y-4">
                       <div>
                         <label className="block text-gray-700 font-medium mb-2">
@@ -451,10 +451,10 @@ export default function AttorneyFeePage() {
                         <input
                           type="number"
                           step="0.1"
-                          value={data.feeStructure.percentage || ''}
-                          onChange={(e) => setData({ 
-                            ...data, 
-                            feeStructure: { ...data.feeStructure, percentage: Number(e.target.value) }
+                          value={data.fee.percentage || ''}
+                          onChange={(e) => setData({
+                            ...data,
+                            fee: { ...data.fee, percentage: Number(e.target.value) }
                           })}
                           className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
                           placeholder="10"
@@ -498,8 +498,8 @@ export default function AttorneyFeePage() {
                         type="radio"
                         name="paymentSchedule"
                         value={term}
-                        checked={data.paymentSchedule === term}
-                        onChange={(e) => setData({ ...data, paymentSchedule: e.target.value as any })}
+                        checked={data.payment.schedule === term}
+                        onChange={(e) => setData({ ...data, payment: { ...data.payment, schedule: e.target.value as any } })}
                         className="ml-3"
                       />
                       <span className="font-medium">
@@ -540,18 +540,18 @@ export default function AttorneyFeePage() {
                   <div className="flex justify-between">
                     <span className="text-gray-600">סוג שכר טרחה:</span>
                     <span className="font-semibold">
-                      {data.feeStructure.type === 'flat' && 'סכום קבוע'}
-                      {data.feeStructure.type === 'hourly' && 'שעתי'}
-                      {data.feeStructure.type === 'percentage' && 'אחוזים'}
-                      {data.feeStructure.type === 'retainer_hourly' && 'מקדמה + שעתי'}
+                      {data.fee.structure === 'flat_fee' && 'סכום קבוע'}
+                      {data.fee.structure === 'hourly_rate' && 'שעתי'}
+                      {data.fee.structure === 'contingency' && 'אחוזים'}
+                      {data.fee.structure === 'retainer_plus' && 'מקדמה + שעתי'}
                     </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">סכום:</span>
                     <span className="font-semibold text-lg text-blue-600">
-                      {data.feeStructure.flatAmount && `₪${data.feeStructure.flatAmount.toLocaleString()}`}
-                      {data.feeStructure.hourlyRate && `₪${data.feeStructure.hourlyRate}/שעה`}
-                      {data.feeStructure.percentage && `${data.feeStructure.percentage}%`}
+                      {data.fee.flatAmount && `₪${data.fee.flatAmount.toLocaleString()}`}
+                      {data.fee.hourlyRate && `₪${data.fee.hourlyRate}/שעה`}
+                      {data.fee.percentage && `${data.fee.percentage}%`}
                     </span>
                   </div>
                 </div>
