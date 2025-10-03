@@ -83,9 +83,24 @@
     direction: rtl !important;
     text-align: right !important;
     font-family: 'Arial', 'David', sans-serif !important;
+    unicode-bidi: embed !important;
   }
 
   p, div, span, td, th, li, textarea {
+    direction: rtl !important;
+    text-align: right !important;
+    unicode-bidi: embed !important;
+  }
+
+  /* תיקון מספרים - וודא שהם בצד ימין */
+  .font-bold {
+    direction: rtl !important;
+    text-align: right !important;
+    unicode-bidi: embed !important;
+  }
+
+  /* תיקון סעיפים עם מספרים */
+  p:has(span) {
     direction: rtl !important;
     text-align: right !important;
   }

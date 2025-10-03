@@ -28,6 +28,7 @@ export interface Witness {
   address: string;
   phone?: string;
   email?: string;
+  gender?: 'male' | 'female';
 }
 
 // נכס מפורט

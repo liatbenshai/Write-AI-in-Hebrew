@@ -18,7 +18,22 @@ import {
 import type { IndividualWillData, MutualWillData } from '../../app/legal/wills/types';
 
 /**
- * יצירת פסקה עם RTL
+ * המרת מספרים לעברית
+ */
+function convertNumbersToHebrew(text: string): string {
+  return text
+    .replace(/\.(\d+)/g, (match, num) => `.${num}`) // שמירת נקודה לפני מספר
+    .replace(/(\d+)/g, (match) => {
+      // המרת מספרים עבריים (רק אם זה לא תאריך או ת.ז.)
+      if (match.length <= 2 && !match.includes('.') && !match.includes('/')) {
+        return match; // שמירת מספרים קצרים
+      }
+      return match;
+    });
+}
+
+/**
+ * יצירת פסקה עם RTL מלא
  */
 function createRTLParagraph(text: string, options: {
   bold?: boolean;
@@ -26,15 +41,19 @@ function createRTLParagraph(text: string, options: {
   alignment?: typeof AlignmentType[keyof typeof AlignmentType];
   indent?: number;
   spacing?: { before?: number; after?: number };
+  fontSize?: number;
 } = {}) {
+  const convertedText = convertNumbersToHebrew(text);
+  
   return new Paragraph({
     children: [
       new TextRun({
-        text,
+        text: convertedText,
         bold: options.bold,
         font: 'Arial',
-        size: options.heading ? 32 : 24, // 16pt or 12pt
+        size: options.fontSize || (options.heading ? 32 : 24),
         rightToLeft: true,
+        boldComplexScript: true,
       }),
     ],
     heading: options.heading,
@@ -43,15 +62,34 @@ function createRTLParagraph(text: string, options: {
     indent: options.indent ? { 
       right: convertInchesToTwip(options.indent),
       left: 0,
-      hanging: 0,
-    } : {
-      right: 0,
-      left: 0,
-    },
+    } : undefined,
     spacing: options.spacing || { 
       before: 120,
       after: 120,
       line: 360,
+    },
+  });
+}
+
+/**
+ * יצירת טבלה עם RTL
+ */
+function createRTLTable(rows: any[]) {
+  return new Table({
+    rows,
+    width: {
+      size: 100,
+      type: WidthType.PERCENTAGE,
+    },
+    alignment: AlignmentType.RIGHT,
+    layout: 'fixed',
+    borders: {
+      top: { style: BorderStyle.SINGLE, size: 1 },
+      bottom: { style: BorderStyle.SINGLE, size: 1 },
+      left: { style: BorderStyle.SINGLE, size: 1 },
+      right: { style: BorderStyle.SINGLE, size: 1 },
+      insideHorizontal: { style: BorderStyle.SINGLE, size: 1 },
+      insideVertical: { style: BorderStyle.SINGLE, size: 1 },
     },
   });
 }
@@ -68,7 +106,8 @@ export async function exportIndividualWillToWord(data: IndividualWillData) {
         .replace(/מצהירה/g, 'מצהיר')
         .replace(/מצווה ומורישה/g, 'מצווה ומוריש')
         .replace(/חתמה/g, 'חתם')
-        .replace(/נושאת/g, 'נושא');
+        .replace(/נושאת/g, 'נושא')
+        .replace(/קובעת/g, 'קובע');
     }
     return text;
   };
@@ -144,6 +183,8 @@ export async function exportIndividualWillToWord(data: IndividualWillData) {
       )
     );
     
+    // טבלת יורשים
+    // רשימה פשוטה במקום טבלה
     data.beneficiaries.forEach((ben, idx) => {
       sections.push(
         createRTLParagraph(
@@ -245,7 +286,7 @@ export async function exportIndividualWillToWord(data: IndividualWillData) {
 
   sections.push(
     createRTLParagraph(
-      getText(`מעידות בזאת שהמצווה חתמה בפנינו מרצונה הטוב והחופשי והצהירה כי זו צוואתה. אנו מצהירות כי אנו לא קטינות ולא פסולות דין וכי אין לאף אחת מאיתנו כל טובת הנאה בעיזבון של המצווה.`),
+      `אנו מעידות בזאת שהמצווה הנ"ל ${data.testator.name}, הנוש${gender === 'female' ? 'א' : 'ה'} תעודת זהות ${data.testator.id} חתם בנוכחותנו על צוואתו הנ"ל לאחר שהצהיר בפנינו שזאת צוואתו האחרונה שאותה עשה מרצונו הטוב והחופשי בהיותו בדעה צלולה ובלי כל אונס או כפיה, וביקש מאיתנו להיות עדות לחתימתו ולאשר בחתימת ידנו שכך הצהיר וחתם בפנינו. ועוד אנו מצהירות כי אנו לא קטינות ולא פסולות דין וכי אין בינינו ובין המצווה יחס של קרבה כלשהיא, אין לנו כל טובת הנאה בעיזבון המצווה הנ"ל, והננו חותמות ומאשרות בזה כי המצווה הנ"ל חתם בפנינו על שטר צוואה זה לאחר שהצהיר בפנינו כי זו צוואתו ובזה אנו חותמות בתור עדות לצוואה בנוכחות של המצווה הנ"ל ובנוכחות כל אחת מאיתנו.`,
       { spacing: { before: 200, after: 400 } }
     )
   );
