@@ -260,7 +260,7 @@ export default function ClientsPage() {
                   {/* Actions */}
                   <div className="flex items-center gap-2 mr-4">
                     <Link
-                      href={`/clients/${client.id}`}
+                      href={`/clients/${client.id}` as any}
                       className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                       title="צפה בלקוח"
                     >
@@ -270,7 +270,7 @@ export default function ClientsPage() {
                       </svg>
                     </Link>
                     <Link
-                      href={`/clients/${client.id}/edit`}
+                      href={`/clients/${client.id}/edit` as any}
                       className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
                       title="ערוך לקוח"
                     >

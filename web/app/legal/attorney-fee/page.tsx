@@ -98,7 +98,7 @@ export default function AttorneyFeePage() {
     }
     
     if (currentStep === 3) {
-      if (!data.feeStructure.type) {
+      if (!data.fee.structure) {
         alert('אנא בחר סוג שכר טרחה');
         return false;
       }

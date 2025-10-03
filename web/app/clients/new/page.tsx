@@ -5,14 +5,15 @@ import Link from 'next/link';
 import { Button } from '../../../components/ui/Button';
 import { PhoneInput, EmailInput } from '../../../components/forms';
 import { Input } from '../../../components/ui/Input';
-import { addClient, type Client } from '../../../lib/storage/clients';
+import { addClient } from '../../../lib/storage/clients';
+import type { Client } from '@/types/client';
 import { useRouter } from 'next/navigation';
 
 export default function NewClientPage() {
   const router = useRouter();
   const [formData, setFormData] = useState<Partial<Client>>({
     name: '',
-    id: '',
+    idNumber: '',
     address: '',
     phone: '',
     email: '',
@@ -25,19 +26,22 @@ export default function NewClientPage() {
     setIsSubmitting(true);
 
     try {
-      if (!formData.name || !formData.id || !formData.address) {
+      if (!formData.name || !formData.idNumber || !formData.address) {
         alert('אנא מלא את כל השדות החובה');
         return;
       }
 
       const newClient: Client = {
-        id: formData.id,
+        id: Date.now().toString(),
         name: formData.name,
+        idNumber: formData.idNumber,
         address: formData.address,
         phone: formData.phone || '',
         email: formData.email || '',
         notes: formData.notes || '',
         documents: [],
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
       };
 
       addClient(newClient);
@@ -88,8 +92,8 @@ export default function NewClientPage() {
               <Input
                 label="תעודת זהות *"
                 required
-                value={formData.id || ''}
-                onChange={(e) => updateField('id', e.target.value)}
+                value={formData.idNumber || ''}
+                onChange={(e) => updateField('idNumber', e.target.value)}
                 placeholder="9 ספרות"
               />
             </div>
