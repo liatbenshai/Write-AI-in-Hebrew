@@ -1,9 +1,9 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import type { IndividualWillData, Gender, Beneficiary, Asset, Clause } from './types';
 import { Input } from '../../../components/ui/Input';
-import { IsraeliIDInput } from '../../../components/forms/IsraeliIDInput';
+import { IsraeliIDInput, PhoneInput, EmailInput, DateInput } from '../../../components/forms';
 import { Button } from '../../../components/ui/Button';
 
 type Props = {
@@ -12,6 +12,16 @@ type Props = {
 };
 
 export default function IndividualWillForm({ data, onChange }: Props) {
+  // מצב ולידציה
+  const [validationState, setValidationState] = useState({
+    testatorId: false,
+    testatorPhone: false,
+    testatorEmail: false,
+    witness1Id: false,
+    witness2Id: false,
+    witness1Phone: false,
+    witness2Phone: false,
+  });
   const updateTestator = (field: keyof typeof data.testator, value: any) => {
     onChange({
       ...data,
@@ -228,26 +238,70 @@ export default function IndividualWillForm({ data, onChange }: Props) {
 
         <div className="grid md:grid-cols-2 gap-4">
           <Input
-            label="שם מלא"
+            label="שם מלא *"
             required
             value={data.testator.name}
             onChange={(e) => updateTestator('name', e.target.value)}
           />
           <IsraeliIDInput
-            label="תעודת זהות"
+            label="תעודת זהות *"
             required
             value={data.testator.id}
             onChange={(e) => updateTestator('id', e.target.value)}
+            onValidationChange={(isValid) => 
+              setValidationState(prev => ({ ...prev, testatorId: isValid }))
+            }
           />
         </div>
-        <Input
-          label="כתובת מלאה"
-          required
-          value={data.testator.address}
-          onChange={(e) => updateTestator('address', e.target.value)}
-          className="mt-4"
-          placeholder="רחוב, מספר, עיר"
-        />
+        
+        <div className="grid md:grid-cols-2 gap-4 mt-4">
+          <Input
+            label="כתובת מלאה *"
+            required
+            value={data.testator.address}
+            onChange={(e) => updateTestator('address', e.target.value)}
+            placeholder="רחוב, מספר, עיר"
+          />
+          <PhoneInput
+            label="טלפון"
+            value={data.testator.phone || ''}
+            onChange={(e) => updateTestator('phone', e.target.value)}
+            onValidationChange={(isValid) => 
+              setValidationState(prev => ({ ...prev, testatorPhone: isValid }))
+            }
+          />
+        </div>
+        
+        <div className="mt-4">
+          <EmailInput
+            label="אימייל"
+            value={data.testator.email || ''}
+            onChange={(e) => updateTestator('email', e.target.value)}
+            onValidationChange={(isValid) => 
+              setValidationState(prev => ({ ...prev, testatorEmail: isValid }))
+            }
+          />
+        </div>
+        
+        {/* אינדיקטור ולידציה */}
+        <div className="mt-3 p-2 bg-gray-50 rounded text-xs">
+          <div className="flex items-center gap-2">
+            <span className={`w-2 h-2 rounded-full ${validationState.testatorId ? 'bg-green-500' : 'bg-gray-300'}`}></span>
+            <span>ת.ז. תקינה</span>
+          </div>
+          {data.testator.phone && (
+            <div className="flex items-center gap-2 mt-1">
+              <span className={`w-2 h-2 rounded-full ${validationState.testatorPhone ? 'bg-green-500' : 'bg-gray-300'}`}></span>
+              <span>טלפון תקין</span>
+            </div>
+          )}
+          {data.testator.email && (
+            <div className="flex items-center gap-2 mt-1">
+              <span className={`w-2 h-2 rounded-full ${validationState.testatorEmail ? 'bg-green-500' : 'bg-gray-300'}`}></span>
+              <span>אימייל תקין</span>
+            </div>
+          )}
+        </div>
       </section>
 
       {/* היקף העיזבון */}
@@ -580,11 +634,12 @@ export default function IndividualWillForm({ data, onChange }: Props) {
       <section className="bg-white border-2 border-gray-300 rounded-lg p-6">
         <h3 className="font-semibold text-lg mb-4">✍️ עדים</h3>
         {data.witnesses.map((witness, idx) => (
-          <div key={idx} className="mb-4 p-3 bg-gray-50 rounded">
-            <p className="font-medium mb-2">עד {idx + 1}</p>
+          <div key={idx} className="mb-6 p-4 bg-gray-50 rounded-lg">
+            <p className="font-medium mb-3 text-gray-800">עד {idx + 1} *</p>
             <div className="grid md:grid-cols-2 gap-3">
               <Input
-                label="שם מלא"
+                label="שם מלא *"
+                required
                 value={witness.name}
                 onChange={(e) => {
                   const newWitnesses: [any, any] = [...data.witnesses] as [any, any];
@@ -593,27 +648,88 @@ export default function IndividualWillForm({ data, onChange }: Props) {
                 }}
               />
               <IsraeliIDInput
-                label="תעודת זהות"
+                label="תעודת זהות *"
+                required
                 value={witness.id}
                 onChange={(e) => {
                   const newWitnesses: [any, any] = [...data.witnesses] as [any, any];
                   newWitnesses[idx].id = e.target.value;
                   onChange({ ...data, witnesses: newWitnesses });
                 }}
+                onValidationChange={(isValid) => 
+                  setValidationState(prev => ({ 
+                    ...prev, 
+                    [`witness${idx + 1}Id`]: isValid 
+                  }))
+                }
               />
             </div>
-            <Input
-              label="כתובת"
-              value={witness.address}
-              onChange={(e) => {
-                const newWitnesses: [any, any] = [...data.witnesses] as [any, any];
-                newWitnesses[idx].address = e.target.value;
-                onChange({ ...data, witnesses: newWitnesses });
-              }}
-              className="mt-3"
-            />
+            
+            <div className="grid md:grid-cols-2 gap-3 mt-3">
+              <Input
+                label="כתובת *"
+                required
+                value={witness.address}
+                onChange={(e) => {
+                  const newWitnesses: [any, any] = [...data.witnesses] as [any, any];
+                  newWitnesses[idx].address = e.target.value;
+                  onChange({ ...data, witnesses: newWitnesses });
+                }}
+                placeholder="רחוב, מספר, עיר"
+              />
+              <PhoneInput
+                label="טלפון"
+                value={witness.phone || ''}
+                onChange={(e) => {
+                  const newWitnesses: [any, any] = [...data.witnesses] as [any, any];
+                  newWitnesses[idx].phone = e.target.value;
+                  onChange({ ...data, witnesses: newWitnesses });
+                }}
+                onValidationChange={(isValid) => 
+                  setValidationState(prev => ({ 
+                    ...prev, 
+                    [`witness${idx + 1}Phone`]: isValid 
+                  }))
+                }
+              />
+            </div>
+            
+            <div className="mt-3">
+              <EmailInput
+                label="אימייל"
+                value={witness.email || ''}
+                onChange={(e) => {
+                  const newWitnesses: [any, any] = [...data.witnesses] as [any, any];
+                  newWitnesses[idx].email = e.target.value;
+                  onChange({ ...data, witnesses: newWitnesses });
+                }}
+              />
+            </div>
+            
+            {/* אינדיקטור ולידציה לעד */}
+            <div className="mt-3 p-2 bg-white rounded text-xs border">
+              <div className="flex items-center gap-2">
+                <span className={`w-2 h-2 rounded-full ${validationState[`witness${idx + 1}Id`] ? 'bg-green-500' : 'bg-gray-300'}`}></span>
+                <span>ת.ז. תקינה</span>
+              </div>
+              {witness.phone && (
+                <div className="flex items-center gap-2 mt-1">
+                  <span className={`w-2 h-2 rounded-full ${validationState[`witness${idx + 1}Phone`] ? 'bg-green-500' : 'bg-gray-300'}`}></span>
+                  <span>טלפון תקין</span>
+                </div>
+              )}
+            </div>
           </div>
         ))}
+        
+        <div className="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+          <h4 className="font-medium text-blue-900 mb-2">חשוב לדעת:</h4>
+          <ul className="text-sm text-blue-800 space-y-1">
+            <li>• העדים חייבים להיות מעל גיל 18</li>
+            <li>• העדים לא יכולים להיות יורשים או בעלי אינטרס בצוואה</li>
+            <li>• חתימת העדים חייבת להתבצע בנוכחות המצווה</li>
+          </ul>
+        </div>
       </section>
     </div>
   );

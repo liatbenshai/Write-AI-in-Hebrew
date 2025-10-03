@@ -26,6 +26,8 @@ export interface Witness {
   name: string;
   id: string;
   address: string;
+  phone?: string;
+  email?: string;
 }
 
 // נכס מפורט
@@ -44,6 +46,8 @@ export interface IndividualWillData {
     id: string;
     address: string;
     gender: Gender;
+    phone?: string;
+    email?: string;
   };
   
   // היקף העיזבון
