@@ -22,11 +22,18 @@ export default function IndividualWillForm({ data, onChange }: Props) {
     witness1Phone: false,
     witness2Phone: false,
   });
-  const updateTestator = (field: keyof typeof data.testator, value: any) => {
-    onChange({
-      ...data,
-      testator: { ...data.testator, [field]: value },
-    });
+  const updateTestator = (field: string, value: any) => {
+    if (field === 'address' && typeof value === 'object') {
+      onChange({
+        ...data,
+        testator: { ...data.testator, address: value },
+      });
+    } else {
+      onChange({
+        ...data,
+        testator: { ...data.testator, [field]: value },
+      });
+    }
   };
 
   const addBeneficiary = () => {
@@ -271,6 +278,16 @@ export default function IndividualWillForm({ data, onChange }: Props) {
             value={data.testator.name}
             onChange={(e) => updateTestator('name', e.target.value)}
           />
+          <Input
+            label="שם קצר (לשימוש ב'להלן') *"
+            required
+            value={data.testator.shortName}
+            onChange={(e) => updateTestator('shortName', e.target.value)}
+            placeholder="דוגמה: רחל"
+          />
+        </div>
+        
+        <div className="grid md:grid-cols-2 gap-4 mt-4">
           <IsraeliIDInput
             label="תעודת זהות *"
             required
@@ -280,16 +297,6 @@ export default function IndividualWillForm({ data, onChange }: Props) {
               setValidationState(prev => ({ ...prev, testatorId: isValid }))
             }
           />
-        </div>
-        
-        <div className="grid md:grid-cols-2 gap-4 mt-4">
-          <Input
-            label="כתובת מלאה *"
-            required
-            value={data.testator.address}
-            onChange={(e) => updateTestator('address', e.target.value)}
-            placeholder="רחוב, מספר, עיר"
-          />
           <PhoneInput
             label="טלפון"
             value={data.testator.phone || ''}
@@ -297,6 +304,39 @@ export default function IndividualWillForm({ data, onChange }: Props) {
             onValidationChange={(isValid) => 
               setValidationState(prev => ({ ...prev, testatorPhone: isValid }))
             }
+          />
+        </div>
+        
+        <div className="grid md:grid-cols-2 gap-4 mt-4">
+          <Input
+            label="רחוב *"
+            required
+            value={data.testator.address.street}
+            onChange={(e) => updateTestator('address', { ...data.testator.address, street: e.target.value })}
+            placeholder="רחוב הרצל"
+          />
+          <Input
+            label="מספר בית *"
+            required
+            value={data.testator.address.houseNumber}
+            onChange={(e) => updateTestator('address', { ...data.testator.address, houseNumber: e.target.value })}
+            placeholder="15"
+          />
+        </div>
+        
+        <div className="grid md:grid-cols-2 gap-4 mt-4">
+          <Input
+            label="דירה (אופציונלי)"
+            value={data.testator.address.apartment || ''}
+            onChange={(e) => updateTestator('address', { ...data.testator.address, apartment: e.target.value })}
+            placeholder="12"
+          />
+          <Input
+            label="עיר *"
+            required
+            value={data.testator.address.city}
+            onChange={(e) => updateTestator('address', { ...data.testator.address, city: e.target.value })}
+            placeholder="תל אביב"
           />
         </div>
         
@@ -390,6 +430,77 @@ export default function IndividualWillForm({ data, onChange }: Props) {
           </div>
         ) : (
           <p className="text-gray-500 text-sm">לחץ על "הוסף נכס" להוספת נכסים (יופיעו כסעיפי משנה 5.1, 5.2 וכו')</p>
+        )}
+      </section>
+
+      {/* פורמט תצוגת יורשים */}
+      <section className="bg-white border-2 border-purple-200 rounded-lg p-6">
+        <h3 className="font-semibold text-lg mb-4">📋 פורמט תצוגת יורשים</h3>
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <FormatOption
+            id="list"
+            selected={data.heirsDisplayFormat === 'list'}
+            onClick={() => onChange({ ...data, heirsDisplayFormat: 'list' })}
+            title="רשימה"
+            subtitle="מומלץ עד 4 יורשים"
+            recommended={data.beneficiaries.length <= 4}
+            preview={
+              <div className="text-xs font-mono bg-gray-100 p-2 rounded mt-2">
+                .6.1 שליש – דוד<br/>
+                .6.2 שליש – שרה<br/>
+                .6.3 שליש – מיכל
+              </div>
+            }
+          />
+          
+          <FormatOption
+            id="table"
+            selected={data.heirsDisplayFormat === 'table'}
+            onClick={() => onChange({ ...data, heirsDisplayFormat: 'table' })}
+            title="טבלה"
+            subtitle="מומלץ ל-5+ יורשים"
+            recommended={data.beneficiaries.length >= 5}
+            preview={
+              <div className="text-xs font-mono bg-gray-100 p-2 rounded mt-2 text-left">
+                ┌────────┬───────┐<br/>
+                │ שם     │ חלק   │<br/>
+                ├────────┼───────┤<br/>
+                │ דוד    │ 33%   │<br/>
+                └────────┴───────┘
+              </div>
+            }
+          />
+          
+          <FormatOption
+            id="detailed_table"
+            selected={data.heirsDisplayFormat === 'detailed_table'}
+            onClick={() => onChange({ ...data, heirsDisplayFormat: 'detailed_table' })}
+            title="טבלה מפורטת"
+            subtitle="עם הערות ופרטים"
+            recommended={false}
+            preview={
+              <div className="text-xs font-mono bg-gray-100 p-2 rounded mt-2 text-left">
+                ┌────┬────┬───────┐<br/>
+                │ שם │ חלק│ הערות │<br/>
+                ├────┼────┼───────┤<br/>
+                │דוד │33% │ בכור  │<br/>
+                └────┴────┴───────┘
+              </div>
+            }
+          />
+        </div>
+        
+        {/* המלצה אוטומטית */}
+        {data.beneficiaries.length > 0 && (
+          <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded">
+            <span className="font-semibold">💡 המלצה: </span>
+            {data.beneficiaries.length <= 4 ? (
+              <span>מכיוון שיש לך {data.beneficiaries.length} יורשים, פורמט <strong>רשימה</strong> יהיה הכי קריא.</span>
+            ) : (
+              <span>מכיוון שיש לך {data.beneficiaries.length} יורשים, פורמט <strong>טבלה</strong> יהיה הכי מסודר.</span>
+            )}
+          </div>
         )}
       </section>
 
@@ -823,6 +934,53 @@ export default function IndividualWillForm({ data, onChange }: Props) {
           </ul>
         </div>
       </section>
+    </div>
+  );
+}
+
+// רכיב עזר לבחירת פורמט
+interface FormatOptionProps {
+  id: string;
+  selected: boolean;
+  onClick: () => void;
+  title: string;
+  subtitle: string;
+  recommended: boolean;
+  preview: React.ReactNode;
+}
+
+function FormatOption({ id, selected, onClick, title, subtitle, recommended, preview }: FormatOptionProps) {
+  return (
+    <div
+      className={`
+        relative border-2 p-4 rounded-lg cursor-pointer transition-all
+        ${selected 
+          ? 'border-blue-500 bg-blue-50 shadow-md' 
+          : 'border-gray-300 hover:border-gray-400'
+        }
+      `}
+      onClick={onClick}
+    >
+      {recommended && (
+        <div className="absolute top-2 left-2 bg-green-500 text-white text-xs px-2 py-1 rounded">
+          מומלץ
+        </div>
+      )}
+      
+      <input
+        type="radio"
+        id={id}
+        name="heirs-format"
+        checked={selected}
+        onChange={onClick}
+        className="mb-2"
+      />
+      
+      <label htmlFor={id} className="cursor-pointer">
+        <div className="font-semibold text-lg">{title}</div>
+        <div className="text-sm text-gray-600 mt-1">{subtitle}</div>
+        {preview}
+      </label>
     </div>
   );
 }

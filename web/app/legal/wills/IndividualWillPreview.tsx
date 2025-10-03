@@ -3,6 +3,7 @@
 import React from 'react';
 import type { IndividualWillData } from './types';
 import { getGenderedText } from './types';
+import './will-document.css';
 
 type Props = { data: IndividualWillData };
 
@@ -12,23 +13,33 @@ export default function IndividualWillPreview({ data }: Props) {
   const getText = (text: string) => getGenderedText(text, gender);
   
   return (
-    <div className="bg-white border rounded-lg p-8 space-y-6" dir="rtl" style={{ fontFamily: 'Arial', textAlign: 'right', direction: 'rtl' }}>
+    <div className="will-document">
       {/* כותרת */}
-      <div style={{ textAlign: 'center', borderBottom: '2px solid #333', paddingBottom: '1rem', direction: 'rtl' }}>
-        <h1 className="text-3xl font-bold mb-2" style={{ textAlign: 'center', direction: 'rtl' }}>צוואה</h1>
-        <p className="text-sm text-gray-600" style={{ textAlign: 'center', direction: 'rtl' }}>
-          נחתם{gender === 'female' ? 'ה' : ''} ביום: {data.date}
+      <h1 className="will-title">צוואה</h1>
+      
+      {/* פתיחה - "הואיל כי" */}
+      <div className="will-preamble mb-8">
+        <p className="text-sm leading-relaxed mb-4">
+          הואיל כי אין אדם יודע את יום פקודתו;
         </p>
-      </div>
-
-      {/* פתיחה */}
-      <div className="text-base leading-relaxed" style={{ textAlign: 'right', direction: 'rtl' }}>
-        <p className="mb-4" style={{ textAlign: 'right', direction: 'rtl' }}>
-          לפיכך אני הח"מ <strong>{data.testator.name}</strong>, (להלן: "<strong>{data.testator.name.split(' ')[1] || data.testator.name}</strong>") ת"ז <strong>{data.testator.id}</strong>. 
-          מרחוב: <strong>{data.testator.address}</strong>. 
+        
+        <p className="text-sm leading-relaxed mb-4">
+          והואיל כי ברצוני לערוך את צוואתי, ולפרט את רצוני האחרון והוראותיי 
+          בכל הקשור לאשר ייעשה ברכושי לאחר פטירתי, לאחר אריכות ימים ושנים;
+        </p>
+        
+        <p className="text-sm leading-relaxed mb-6">
+          והואיל כי הנני למעלה מגיל שמונה עשרה שנים, אזרחית/אזרח ישראלי 
+          ותושבת/תושב מדינת ישראל;
+        </p>
+        
+        <p className="text-sm leading-relaxed mb-6">
+          לפיכך אני הח"מ <strong>{data.testator.name}</strong>, (להלן: "<strong>{data.testator.shortName || data.testator.name.split(' ')[0]}</strong>") ת"ז <strong>{data.testator.id}</strong>. 
+          מרחוב: <strong>{data.testator.address.street} {data.testator.address.houseNumber}
+          {data.testator.address.apartment && `, דירה ${data.testator.address.apartment}`}, {data.testator.address.city}</strong>. 
           לאחר שיקול דעת, ובהיותי בדעה צלולה ובכושר גמור להבחין בטיבה של צוואה, 
           הנני מצווה בזאת בדעה מוגמרת וללא כל השפעה בלתי הוגנת עליי מצד כלשהו, 
-          את מה שייעשה ברכושי לאחר מותי, {gender === 'female' ? 'קובעת ומצהירה' : 'קובע ומצהיר'} כמפורט להלן:
+          את מה שייעשה ברכושי לאחר מותי, {getGenderedText('קובעת', gender)} ו{getGenderedText('מצהירה', gender)} כמפורט להלן:
         </p>
       </div>
 

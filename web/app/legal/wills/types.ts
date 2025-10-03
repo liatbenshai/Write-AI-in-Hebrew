@@ -50,8 +50,14 @@ export interface IndividualWillData {
   // המצווה
   testator: {
     name: string;
+    shortName: string; // לשימוש ב"להלן"
     id: string;
-    address: string;
+    address: {
+      street: string;
+      houseNumber: string;
+      apartment?: string;
+      city: string;
+    };
     gender: Gender;
     phone?: string;
     email?: string;
@@ -65,6 +71,9 @@ export interface IndividualWillData {
   
   // יורשים
   beneficiaries: Beneficiary[];
+  
+  // פורמט תצוגת יורשים
+  heirsDisplayFormat: 'list' | 'table' | 'detailed_table';
   
   // סעיפים סטנדרטיים (ניתנים לעריכה)
   standardClauses: {
@@ -85,6 +94,12 @@ export interface IndividualWillData {
   
   // כותרות (לא ממוספרות)
   headings: Heading[];
+  
+  // פרטי חתימה
+  signing: {
+    city: string;
+    fullDate: string; // תאריך מלא בעברית
+  };
   
   // עדים
   witnesses: [Witness, Witness];
@@ -240,8 +255,14 @@ export function defaultIndividualWillData(): IndividualWillData {
     
     testator: {
       name: '',
+      shortName: '',
       id: '',
-      address: '',
+      address: {
+        street: '',
+        houseNumber: '',
+        apartment: '',
+        city: '',
+      },
       gender: 'female',
     },
     
@@ -303,6 +324,13 @@ export function defaultIndividualWillData(): IndividualWillData {
     
     date: new Date().toLocaleDateString('he-IL'),
     hebrewDate: '',
+    
+    heirsDisplayFormat: 'list',
+    
+    signing: {
+      city: '',
+      fullDate: '',
+    },
   };
 }
 
