@@ -88,23 +88,9 @@ export async function exportIndividualWillToWord(data: IndividualWillData) {
     }),
     
     // פתיחה
-    createRTLParagraph('הואיל כי אין אדם יודע את יום פקודתו;', {
-      spacing: { before: 200, after: 100 },
-    }),
-    
     createRTLParagraph(
-      `והואיל כי ברצוני לערוך את צוואתי, ולפרט את רצוני האחרון והוראותיי בכל הקשור לאשר ייעשה ברכושי לאחר פטירתי, לאחר אריכות ימים ושנים;`,
-      { spacing: { before: 100, after: 100 } }
-    ),
-    
-    createRTLParagraph(
-      `והואיל כי הנני למעלה מגיל שמונה עשרה שנים, ${gender === 'female' ? 'אזרחית ישראלית ותושבת' : 'אזרח ישראלי ותושב'} מדינת ישראל;`,
-      { spacing: { before: 100, after: 100 } }
-    ),
-    
-    createRTLParagraph(
-      `לפיכך אני הח"מ ${data.testator.name}, ת"ז ${data.testator.id} מרחוב: ${data.testator.address}, לאחר שיקול דעת, ובהיותי בדעה צלולה ובכושר גמור להבחין בטיבה של צוואה, ${gender === 'female' ? 'קובעת ומצהירה' : 'קובע ומצהיר'} בזה כדלקמן:`,
-      { spacing: { before: 100, after: 300 } }
+      `לפיכך אני הח"מ ${data.testator.name}, (להלן: "${data.testator.name.split(' ')[1] || data.testator.name}") ת"ז ${data.testator.id}. מרחוב: ${data.testator.address}. לאחר שיקול דעת, ובהיותי בדעה צלולה ובכושר גמור להבחין בטיבה של צוואה, הנני מצווה בזאת בדעה מוגמרת וללא כל השפעה בלתי הוגנת עליי מצד כלשהו, את מה שייעשה ברכושי לאחר מותי, ${gender === 'female' ? 'קובעת ומצהירה' : 'קובע ומצהיר'} כמפורט להלן:`,
+      { spacing: { before: 200, after: 300 } }
     ),
     
     // סעיפים סטנדרטיים
