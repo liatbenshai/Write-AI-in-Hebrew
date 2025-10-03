@@ -23,17 +23,12 @@ export default function IndividualWillPreview({ data }: Props) {
 
       {/* פתיחה */}
       <div className="text-base leading-relaxed" style={{ textAlign: 'right', direction: 'rtl' }}>
-        <p className="mb-3" style={{ textAlign: 'right', direction: 'rtl' }}>הואיל כי אין אדם יודע את יום פקודתו;</p>
-        <p className="mb-3" style={{ textAlign: 'right', direction: 'rtl' }}>
-          והואיל כי ברצוני לערוך את צוואתי, ולפרט את רצוני האחרון והוראותיי בכל 
-          הקשור לאשר ייעשה ברכושי לאחר פטירתי, לאחר אריכות ימים ושנים;
-        </p>
-        <p className="mb-3" style={{ textAlign: 'right', direction: 'rtl' }}>
-          והואיל כי הנני למעלה מגיל שמונה עשרה שנים, {gender === 'female' ? 'אזרחית ישראלית ותושבת' : 'אזרח ישראלי ותושב'} מדינת ישראל;
-        </p>
-        <p className="mb-3" style={{ textAlign: 'right', direction: 'rtl' }}>
-          לפיכך אני הח"מ <strong>{data.testator.name}</strong>, ת"ז <strong>{data.testator.id}</strong> מרחוב: <strong>{data.testator.address}</strong>, 
-          לאחר שיקול דעת, ובהיותי בדעה צלולה ובכושר גמור להבחין בטיבה של צוואה, {gender === 'female' ? 'קובעת ומצהירה' : 'קובע ומצהיר'} בזה כדלקמן:
+        <p className="mb-4" style={{ textAlign: 'right', direction: 'rtl' }}>
+          לפיכך אני הח"מ <strong>{data.testator.name}</strong>, (להלן: "<strong>{data.testator.name.split(' ')[1] || data.testator.name}</strong>") ת"ז <strong>{data.testator.id}</strong>. 
+          מרחוב: <strong>{data.testator.address}</strong>. 
+          לאחר שיקול דעת, ובהיותי בדעה צלולה ובכושר גמור להבחין בטיבה של צוואה, 
+          הנני מצווה בזאת בדעה מוגמרת וללא כל השפעה בלתי הוגנת עליי מצד כלשהו, 
+          את מה שייעשה ברכושי לאחר מותי, {gender === 'female' ? 'קובעת ומצהירה' : 'קובע ומצהיר'} כמפורט להלן:
         </p>
       </div>
 
@@ -77,47 +72,45 @@ export default function IndividualWillPreview({ data }: Props) {
       </div>
 
       {/* היקף העיזבון */}
-      {data.estate.assets.length > 0 && (
-        <div className="border-t pt-4">
-          <h3 className="font-bold text-lg mb-3">היקף העיזבון:</h3>
+      <div className="border-t pt-4">
+        <h3 className="font-bold text-lg mb-3">היקף העיזבון:</h3>
+        
+        <div className="pr-4">
+          <p className="font-bold mb-2">.4</p>
+          <p className="text-sm leading-relaxed mb-3">
+            {data.standardClauses.scope.text}
+          </p>
           
-          <div className="pr-4">
-            <p className="font-bold mb-2">.5</p>
-            <p className="text-sm leading-relaxed mb-3">
-              כל רכוש מכל מין וסוג שהוא בין במקרקעין בין מיטלטלין, לרבות זכויות מכל סוג שהוא 
-              ו/או כל רכוש אחר (רשומים ושאינם רשומים), אשר בבעלותי כיום ו/או בהווה ו/או יגיעו 
-              לידיי בעתיד, לרבות:
-            </p>
-            
-            {/* תתי-סעיפים של נכסים */}
+          {/* תתי-סעיפים של נכסים */}
+          {data.estate.assets.length > 0 && (
             <div className="space-y-3 pr-6">
               {data.estate.assets.map((asset, idx) => (
                 <div key={idx} className="avoid-break">
-                  <p className="font-bold text-sm mb-1">.5.{idx + 1}</p>
+                  <p className="font-bold text-sm mb-1">.4.{idx + 1}</p>
                   <p className="text-sm pr-4 leading-relaxed">{asset.description}</p>
                 </div>
               ))}
             </div>
-          </div>
+          )}
         </div>
-      )}
+      </div>
 
       {/* חלוקת העיזבון - מיד אחרי היקף העיזבון */}
       {data.beneficiaries.length > 0 && (
         <div className="border-t pt-4">
           <h3 className="font-bold text-lg mb-3">חלוקת העיזבון:</h3>
           <div className="pr-4">
-            <p className="font-bold mb-2">.6</p>
+            <p className="font-bold mb-2">.5</p>
             <p className="text-sm leading-relaxed mb-3">
               אני {gender === 'female' ? 'מצווה ומורישה' : 'מצווה ומוריש'} ל
-              {data.beneficiaries.length === 1 ? 'יורש/ת' : 'יורשים'} בהתאם לחלוקה כמצוין בסעיף 5 לעיל, כדלקמן:
+              {data.beneficiaries.length === 1 ? 'יורש/ת' : 'יורשים'} בהתאם לחלוקה כמצוין בסעיף 4 לעיל, כדלקמן:
             </p>
             
             {/* תתי-סעיפים ליורשים */}
             <div className="space-y-3 pr-6">
               {data.beneficiaries.map((ben, idx) => (
                 <div key={idx}>
-                  <p className="font-bold text-sm mb-1">.6.{idx + 1}</p>
+                  <p className="font-bold text-sm mb-1">.5.{idx + 1}</p>
                   <p className="text-sm pr-4">
                     ל{ben.relationship || 'יורש/ת'}{' '}
                     <strong>{ben.name}</strong>
@@ -137,7 +130,7 @@ export default function IndividualWillPreview({ data }: Props) {
           <h3 className="font-bold text-lg mb-3">סעיפים נוספים:</h3>
           {data.additionalClauses.map((clause, clauseIdx) => (
             <div key={clauseIdx} className="pr-4 avoid-break">
-              <p className="font-bold mb-2">.{clause.number}</p>
+              <p className="font-bold mb-2">.{5 + clauseIdx + 1}</p>
               <p className="text-sm leading-relaxed">{getText(clause.text)}</p>
               
               {/* תתי-סעיפים */}
@@ -146,7 +139,34 @@ export default function IndividualWillPreview({ data }: Props) {
                   {clause.subItems.map((subItem, subIdx) => (
                     subItem && (
                       <div key={subIdx} className="avoid-break">
-                        <p className="font-bold text-sm mb-1">.{clause.number}.{subIdx + 1}</p>
+                        <p className="font-bold text-sm mb-1">.{5 + clauseIdx + 1}.{subIdx + 1}</p>
+                        <p className="text-sm pr-4 leading-relaxed">{getText(subItem)}</p>
+                      </div>
+                    )
+                  ))}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* הוראות מיוחדות */}
+      {data.specialInstructions && data.specialInstructions.length > 0 && (
+        <div className="space-y-4 border-t pt-4">
+          <h3 className="font-bold text-lg mb-3">הוראות מיוחדות:</h3>
+          {data.specialInstructions.map((instruction, instructionIdx) => (
+            <div key={instructionIdx} className="pr-4 avoid-break">
+              <p className="font-bold mb-2">.{5 + data.additionalClauses.length + instructionIdx + 1}</p>
+              <p className="text-sm leading-relaxed">{getText(instruction.text)}</p>
+              
+              {/* תתי-סעיפים */}
+              {instruction.subItems && instruction.subItems.length > 0 && (
+                <div className="pr-6 mt-2 space-y-2">
+                  {instruction.subItems.map((subItem, subIdx) => (
+                    subItem && (
+                      <div key={subIdx} className="avoid-break">
+                        <p className="font-bold text-sm mb-1">.{5 + data.additionalClauses.length + instructionIdx + 1}.{subIdx + 1}</p>
                         <p className="text-sm pr-4 leading-relaxed">{getText(subItem)}</p>
                       </div>
                     )
@@ -160,23 +180,25 @@ export default function IndividualWillPreview({ data }: Props) {
 
       {/* סעיפים אחרונים */}
       <div className="space-y-4 border-t pt-4">
-        <div className="pr-4">
-          <p className="font-bold mb-2">
-            .{7 + data.additionalClauses.length} <span className="underline">פטירה מוקדמת של יורש</span>
-          </p>
-          <p className="text-sm leading-relaxed">{data.standardClauses.predeceased.text}</p>
-        </div>
+        {data.beneficiaries.length > 0 && (
+          <div className="pr-4">
+            <p className="font-bold mb-2">
+              .{5 + data.additionalClauses.length + (data.specialInstructions?.length || 0) + 1} <span className="underline">פטירה מוקדמת של יורש</span>
+            </p>
+            <p className="text-sm leading-relaxed">{data.standardClauses.predeceased.text}</p>
+          </div>
+        )}
 
         <div className="pr-4">
           <p className="font-bold mb-2">
-            .{7 + data.additionalClauses.length + 1} <span className="underline">התנגדות לצוואה</span>
+            .{5 + data.additionalClauses.length + (data.specialInstructions?.length || 0) + 2} <span className="underline">התנגדות לצוואה</span>
           </p>
           <p className="text-sm leading-relaxed">{data.standardClauses.opposition.text}</p>
         </div>
 
         <div className="pr-4">
           <p className="font-bold mb-2">
-            .{7 + data.additionalClauses.length + 2} <span className="underline">רוח טובה</span>
+            .{5 + data.additionalClauses.length + (data.specialInstructions?.length || 0) + 3} <span className="underline">רוח טובה</span>
           </p>
           <p className="text-sm leading-relaxed">{data.standardClauses.goodFaith.text}</p>
         </div>
@@ -206,18 +228,16 @@ export default function IndividualWillPreview({ data }: Props) {
       <div className="border-t pt-6 mt-6 space-y-4">
         <h3 className="font-bold text-center">הצהרת העדים</h3>
         
-        <p className="text-sm">אנו הח"מ:</p>
+        <p className="text-sm leading-relaxed" style={{ textAlign: 'right', direction: 'rtl' }}>
+          אנו מעידות בזאת שהמצווה הנ"ל <strong>{data.testator.name}</strong>, הנוש{gender === 'female' ? 'א' : 'ה'} תעודת זהות <strong>{data.testator.id}</strong> 
+          חתם בנוכחותנו על צוואתו הנ"ל לאחר שהצהיר בפנינו שזאת צוואתו האחרונה שאותה עשה מרצונו הטוב והחופשי בהיותו בדעה צלולה ובלי כל אונס או כפיה, 
+          וביקש מאיתנו להיות עדות לחתימתו ולאשר בחתימת ידנו שכך הצהיר וחתם בפנינו.
+        </p>
         
-        {data.witnesses.map((witness, idx) => (
-          <div key={idx} className="text-sm pl-4">
-            .{idx + 1} {witness.name}, ת.ז. {witness.id}, מרחוב {witness.address}
-          </div>
-        ))}
-
-        <p className="text-sm leading-relaxed mt-4">
-          {getText(`אנו מעידות בזאת שהמצווה: ${data.testator.name}, נושאת ת"ז מס' ${data.testator.id}, חתמה בפנינו מרצונה הטוב והחופשי והצהירה כי זו צוואתה. 
-          אנו מצהירות כי אנו לא קטינות ולא פסולות דין וכי אין לאף אחת מאיתנו כל טובת הנאה בעיזבון של המצווה. 
-          אנו חותמות בתור עדות לצוואה בנוכחותה של המצווה ובנוכחות כל אחת מאיתנו.`)}
+        <p className="text-sm leading-relaxed" style={{ textAlign: 'right', direction: 'rtl' }}>
+          ועוד אנו מצהירות כי אנו לא קטינות ולא פסולות דין וכי אין בינינו ובין המצווה יחס של קרבה כלשהיא, 
+          אין לנו כל טובת הנאה בעיזבון המצווה הנ"ל, והננו חותמות ומאשרות בזה כי המצווה הנ"ל חתם בפנינו על שטר צוואה זה 
+          לאחר שהצהיר בפנינו כי זו צוואתו ובזה אנו חותמות בתור עדות לצוואה בנוכחות של המצווה הנ"ל ובנוכחות כל אחת מאיתנו.
         </p>
 
         <p className="text-sm mt-4">

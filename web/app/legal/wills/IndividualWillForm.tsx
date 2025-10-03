@@ -100,7 +100,7 @@ export default function IndividualWillForm({ data, onChange }: Props) {
   };
 
   const addAdditionalClause = () => {
-    const nextNumber = 7 + data.additionalClauses.length; // אחרי חלוקה (סעיף 6)
+    const nextNumber = 5 + data.additionalClauses.length + 1; // אחרי חלוקה (סעיף 5)
     onChange({
       ...data,
       additionalClauses: [
@@ -142,6 +142,50 @@ export default function IndividualWillForm({ data, onChange }: Props) {
     const newClauses = [...data.additionalClauses];
     newClauses[clauseIndex].subItems = newClauses[clauseIndex].subItems!.filter((_, i) => i !== subIndex);
     onChange({ ...data, additionalClauses: newClauses });
+  };
+
+  // הוראות מיוחדות
+  const addSpecialInstruction = () => {
+    const nextNumber = 5 + data.additionalClauses.length + (data.specialInstructions?.length || 0) + 1;
+    onChange({
+      ...data,
+      specialInstructions: [
+        ...(data.specialInstructions || []),
+        { number: nextNumber, text: '', editable: true, subItems: [] },
+      ],
+    });
+  };
+
+  const removeSpecialInstruction = (index: number) => {
+    const filtered = (data.specialInstructions || []).filter((_, i) => i !== index);
+    onChange({ ...data, specialInstructions: filtered });
+  };
+
+  const updateSpecialInstruction = (index: number, text: string) => {
+    const newInstructions = [...(data.specialInstructions || [])];
+    newInstructions[index] = { ...newInstructions[index], text };
+    onChange({ ...data, specialInstructions: newInstructions });
+  };
+
+  const addSpecialSubItem = (instructionIdx: number) => {
+    const newInstructions = [...(data.specialInstructions || [])];
+    if (!newInstructions[instructionIdx].subItems) {
+      newInstructions[instructionIdx].subItems = [];
+    }
+    newInstructions[instructionIdx].subItems = [...newInstructions[instructionIdx].subItems!, ''];
+    onChange({ ...data, specialInstructions: newInstructions });
+  };
+
+  const updateSpecialSubItem = (instructionIdx: number, subIdx: number, text: string) => {
+    const newInstructions = [...(data.specialInstructions || [])];
+    newInstructions[instructionIdx].subItems![subIdx] = text;
+    onChange({ ...data, specialInstructions: newInstructions });
+  };
+
+  const removeSpecialSubItem = (instructionIdx: number, subIdx: number) => {
+    const newInstructions = [...(data.specialInstructions || [])];
+    newInstructions[instructionIdx].subItems = newInstructions[instructionIdx].subItems?.filter((_, i) => i !== subIdx);
+    onChange({ ...data, specialInstructions: newInstructions });
   };
 
   return (
@@ -446,6 +490,89 @@ export default function IndividualWillForm({ data, onChange }: Props) {
           </div>
         ) : (
           <p className="text-gray-500 text-sm">לחץ על "הוסף סעיף" להוספת סעיפים נוספים (עם אפשרות לתתי-סעיפים)</p>
+        )}
+      </section>
+
+      {/* הוראות מיוחדות */}
+      <section className="bg-white border-2 border-purple-300 rounded-lg p-6">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="font-semibold text-lg">🎯 הוראות מיוחדות</h3>
+          <Button
+            onClick={addSpecialInstruction}
+            variant="secondary"
+            size="sm"
+          >
+            + הוסף הוראה מיוחדת
+          </Button>
+        </div>
+
+        {data.specialInstructions && data.specialInstructions.length > 0 ? (
+          <div className="space-y-4">
+            {data.specialInstructions.map((instruction, instructionIdx) => (
+              <div key={instructionIdx} className="border-2 border-purple-200 rounded-lg p-4 bg-purple-50/30">
+                <div className="flex items-center justify-between mb-2">
+                  <label className="font-medium text-sm text-purple-900">הוראה מיוחדת {instruction.number}</label>
+                  <button
+                    onClick={() => removeSpecialInstruction(instructionIdx)}
+                    className="text-red-600 hover:text-red-700 text-sm"
+                  >
+                    מחק הוראה
+                  </button>
+                </div>
+                <textarea
+                  value={instruction.text}
+                  onChange={(e) => updateSpecialInstruction(instructionIdx, e.target.value)}
+                  rows={3}
+                  className="w-full px-3 py-2 border rounded-lg text-sm mb-3"
+                  placeholder="תוכן ההוראה המיוחדת..."
+                />
+
+                {/* תתי-סעיפים */}
+                <div className="border-t pt-3">
+                  <div className="flex items-center justify-between mb-2">
+                    <label className="text-xs font-medium text-purple-800">
+                      תתי-סעיפים ({instruction.number}.1, {instruction.number}.2...):
+                    </label>
+                    <button
+                      onClick={() => addSpecialSubItem(instructionIdx)}
+                      className="px-2 py-1 text-xs bg-purple-600 text-white rounded hover:bg-purple-700"
+                    >
+                      + תת-סעיף
+                    </button>
+                  </div>
+
+                  {instruction.subItems && instruction.subItems.length > 0 && (
+                    <div className="space-y-2">
+                      {instruction.subItems.map((subItem, subIdx) => (
+                        <div key={subIdx} className="bg-white rounded border p-2">
+                          <div className="flex items-center justify-between mb-1">
+                            <label className="text-xs font-medium text-gray-600">
+                              תת-סעיף {instruction.number}.{subIdx + 1}
+                            </label>
+                            <button
+                              onClick={() => removeSpecialSubItem(instructionIdx, subIdx)}
+                              className="text-red-600 hover:text-red-700 text-xs"
+                            >
+                              מחק
+                            </button>
+                          </div>
+                          <textarea
+                            value={subItem}
+                            onChange={(e) => updateSpecialSubItem(instructionIdx, subIdx, e.target.value)}
+                            rows={2}
+                            className="w-full px-2 py-1 border rounded text-xs"
+                            placeholder="תוכן תת-הסעיף..."
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-gray-500 text-sm">לחץ על "הוסף הוראה מיוחדת" להוספת הוראות מיוחדות (עם אפשרות לתתי-סעיפים)</p>
         )}
       </section>
 
