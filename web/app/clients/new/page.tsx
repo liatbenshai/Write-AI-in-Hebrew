@@ -3,7 +3,8 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { Button } from '../../../components/ui/Button';
-import { Input, PhoneInput, EmailInput } from '../../../components/forms';
+import { PhoneInput, EmailInput } from '../../../components/forms';
+import { Input } from '../../../components/ui/Input';
 import { addClient, type Client } from '../../../lib/storage/clients';
 import { useRouter } from 'next/navigation';
 
